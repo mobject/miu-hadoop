@@ -17,11 +17,10 @@ public class TemperatureTool extends Configured implements Tool {
     public int run(String[] args) throws Exception {
         Job job = new Job(getConf(), "AvgTemperature");
         job.setMapperClass(TempDataMapper.class);
-//        job.setReducerClass(TempDataReducer.class);
         job.setOutputKeyClass(KeyWritable.class);
         job.setOutputValueClass(Text.class);
         job.setInputFormatClass(TextInputFormat.class);
-        job.setOutputFormatClass(TextOutputFormat.class);
+        job.setOutputFormatClass(CustomOutputFormat.class);
 
         FileInputFormat.addInputPath(job, new Path(args[0]));
 
