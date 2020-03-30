@@ -82,9 +82,9 @@ public class WordCountAvroOptput extends Configured implements Tool
 		job.setMapOutputValueClass(IntWritable.class);
 
 		job.setInputFormatClass(TextInputFormat.class);	// This is default format; this line could've been very well omitted!
-		//job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
+		job.setOutputFormatClass(AvroKeyValueOutputFormat.class);
 
-		//AvroJob.setOutputKeySchema(job, Schema.create(Type.STRING));
+		AvroJob.setOutputKeySchema(job, Schema.create(Type.STRING));
 		AvroJob.setOutputValueSchema(job, Schema.create(Type.INT));
 
 		return job.waitForCompletion(true) ? 0 : 1;
