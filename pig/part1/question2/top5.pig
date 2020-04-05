@@ -1,0 +1,10 @@
+users = LOAD '$users' using PigStorage(',') as (name:chararray, age:int);
+pages = LOAD '$pages' using PigStorage(',') as (name:chararray, url:chararray);
+filterdUsers = FILTER users BY age >= 18 AND age <=35;
+joins = JOIN filterdUsers BY name, pages BY name ;
+visitedPages = FOREACH joins GENERATE url;
+grouped = GROUP visitedPages BY url;
+groupedCount = FOREACH grouped GENERATE group, COUNT(visitedPages) as count;
+orderCount = ORDER groupedCount BY count DESC;
+result = LIMIT orderCount 5;
+dump result;
