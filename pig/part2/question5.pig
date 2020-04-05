@@ -1,0 +1,18 @@
+REGISTER piggybank.jar;
+movies = LOAD 'movies.csv' USING org.apache.pig.piggybank.storage.CSVExcelStorage() AS (movieId: int, title: chararray, genres: chararray);
+ratings = LOAD 'rating.txt' USING PigStorage() AS (userId: int, movieId: int, rating: int);
+users = LOAD 'users.txt' USING PigStorage('|') AS (userId:int,age:int,gender:chararray,occupation:chararray,zipCode:chararray);
+movies = FOREACH movies GENERATE movieId, title, STRSPLITTOBAG(genres,'\\|') as genres;
+movies = FOREACH movies GENERATE Flatten(genres) as genres, $0, $1;
+joins = JOIN movies BY movieId, ratings BY movieId;
+adventureMovies = FILTER joins BY genres == 'Adventure' AND rating == 5;
+adventureMovies = FOREACH adventureMovies GENERATE movies::movieId, genres, title, rating;
+adventureMovies = DISTINCT adventureMovies;
+orderedMovies = ORDER adventureMovies BY movieId;
+top20 = LIMIT orderedMovies 20;
+joins = JOIN top20 BY movieId, ratings BY movieId;
+joinUser = JOIN joins by userId, users BY userId;
+maleProgramers = FILTER joinUser BY gender=='M' AND occupation=='programmer';
+grouped = GROUP maleProgramers ALL;
+count = FOREACH grouped GENERATE COUNT(maleProgramers);
+dump count;
